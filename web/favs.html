@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bristenblick — Favoriten</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <link rel="stylesheet" href="/css/site.css">
+</head>
+<body class="bg-slate-900 text-slate-100" x-data="favsApp()" x-init="load()">
+
+  <header class="p-4 border-b border-slate-700 flex justify-between items-baseline">
+    <h1 class="text-2xl font-semibold">★ Favoriten</h1>
+    <a href="/index.html" class="text-blue-400 underline text-sm">← Player</a>
+  </header>
+
+  <main class="p-4">
+    <div class="mb-4 flex gap-2 items-center">
+      <button @click="exportFavs()" class="px-3 py-1 bg-slate-700 rounded text-sm">⤓ Export</button>
+      <label class="px-3 py-1 bg-slate-700 rounded text-sm cursor-pointer">
+        ⤒ Import
+        <input type="file" @change="importFavs($event)" accept=".json" class="hidden">
+      </label>
+      <span class="text-xs text-slate-400" x-text="`${favs.length} Favoriten`"></span>
+    </div>
+
+    <div x-show="favs.length === 0" class="text-slate-400 text-sm">
+      Keine Favoriten. Im Player ★ markieren.
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <template x-for="fav in favs" :key="fav.t">
+        <div class="bg-slate-800 rounded overflow-hidden">
+          <a :href="originalUrl(fav.t)" target="_blank">
+            <img :src="thumbUrl(fav.t)" class="w-full aspect-[3/2] object-cover" :alt="fav.t">
+          </a>
+          <div class="p-3">
+            <div class="text-xs text-slate-400" x-text="formatDate(fav.t)"></div>
+            <input type="text" x-model="fav.note" @change="save()" placeholder="Notiz…"
+                   class="w-full mt-1 bg-slate-900 px-2 py-1 rounded text-sm">
+            <div class="flex justify-between mt-2">
+              <a :href="originalUrl(fav.t)" target="_blank"
+                 class="text-xs text-blue-400 underline">Original</a>
+              <button @click="remove(fav.t)" class="text-xs text-red-400">✕ entfernen</button>
+            </div>
+          </div>
+        </div>
+      </template>
+    </div>
+  </main>
+
+  <script>
+    function favsApp() {
+      return {
+        favs: [],
+        load() {
+          this.favs = JSON.parse(localStorage.getItem('sillywc.favs') || '[]');
+        },
+        save() {
+          localStorage.setItem('sillywc.favs', JSON.stringify(this.favs));
+        },
+        remove(t) {
+          this.favs = this.favs.filter(f => f.t !== t);
+          this.save();
+        },
+        thumbUrl(t) {
+          return `/data/thumbs/${t.slice(0,4)}/${t.slice(5,10)}/${t}.webp`;
+        },
+        originalUrl(t) {
+          return `/data/archive/${t.slice(0,4)}/${t.slice(5,10)}/${t}.jpg`;
+        },
+        formatDate(t) {
+          return new Date(t.replace(/T(\d{2})-(\d{2})-(\d{2})Z/, 'T$1:$2:$3Z'))
+            .toLocaleString('de-CH');
+        },
+        exportFavs() {
+          const blob = new Blob([JSON.stringify(this.favs, null, 2)],
+            { type: 'application/json' });
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = `bristenblick-favs-${Date.now()}.json`;
+          a.click();
+        },
+        importFavs(e) {
+          const file = e.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = () => {
+            try {
+              const imported = JSON.parse(reader.result);
+              const existing = new Set(this.favs.map(f => f.t));
+              for (const f of imported) {
+                if (!existing.has(f.t)) this.favs.push(f);
+              }
+              this.save();
+              alert(`${imported.length} Favoriten importiert (${this.favs.length} total)`);
+            } catch (err) {
+              alert('Fehler beim Import: ' + err.message);
+            }
+          };
+          reader.readAsText(file);
+          e.target.value = '';
+        }
+      };
+    }
+  </script>
+</body>
+</html>

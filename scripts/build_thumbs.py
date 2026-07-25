@@ -20,7 +20,12 @@ def _webp_supported() -> bool:
 def make_thumb(src: Path, dst: Path) -> Path:
     from PIL import Image
     dst.parent.mkdir(parents=True, exist_ok=True)
-    im = Image.open(src)
+    try:
+        im = Image.open(src)
+        im.load()  # force load to catch truncated files early
+    except (OSError, SyntaxError) as e:
+        print(f"corrupt image, skipping: {src} ({e})")
+        return None
     im.thumbnail((WIDTH, WIDTH * 10))
     if _webp_supported():
         im.save(dst, "WEBP", quality=QUALITY, method=4)
@@ -32,13 +37,17 @@ def make_thumb(src: Path, dst: Path) -> Path:
 
 def build_all(archive: Path = ARCHIVE, thumbs: Path = THUMBS) -> int:
     count = 0
+    skipped = 0
     for src in sorted(archive.rglob("*.jpg")):
         dst = thumb_path_for(archive, thumbs, src)
         if dst.exists() or dst.with_suffix(".jpg").exists():
             continue
-        make_thumb(src, dst)
-        count += 1
-    print(f"built {count} thumbs")
+        result = make_thumb(src, dst)
+        if result is None:
+            skipped += 1
+        else:
+            count += 1
+    print(f"built {count} thumbs, skipped {skipped} corrupt")
     return count
 
 

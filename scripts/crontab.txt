@@ -1,0 +1,10 @@
+###--- BEGIN DREAMHOST BLOCK
+###--- Changes made to this part of the file WILL be destroyed!
+# Bitzi trigger watchdog
+MAILTO="siliwalker@gmail.com"
+*/10 * * * * /usr/bin/setlock -n /tmp/cronlock.3784550962.432417 sh -c '/bin/bash -lc '\''if /usr/bin/find /home/silly82/bristenblick.ch/weather/imagebizi.jpg -mmin -20 | /usr/bin/grep -q .; then /usr/bin/curl -fsS -X POST "https://bristenblick.ch/camview/webcam/include/trigger.php" --data "key=6c5cc6e8d51ff5a0e7a100e44e9bdc61a8c9388a726c5acd&wc=bristenblick&now=$(date +\%Y\%m\%d_\%H\%M)" >/dev/null; fi'\'''
+# cron für bristenblick
+MAILTO=""
+*/10 * * * * /usr/bin/setlock -n /tmp/cronlock.3784550962.452599 bash -c "/home/silly82/bristenblick.ch/timelapse/scripts/run_update.sh"
+###--- You can make changes below the next line and they will be preserved!
+###--- END DREAMHOST BLOCK

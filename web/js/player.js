@@ -17,8 +17,8 @@ function playerApp() {
     async init() {
       this.favs = JSON.parse(localStorage.getItem('sillywc.favs') || '[]');
       [this.index, this.status] = await Promise.all([
-        fetch('/data/manifest/index.json').then(r => r.json()),
-        fetch('/data/status.json').then(r => r.json()).catch(() => null),
+        fetch('data/manifest/index.json').then(r => r.json()),
+        fetch('data/status.json').then(r => r.json()).catch(() => null),
       ]);
       const keys = this.index.months.map(m => m.key);
       this.rangeFrom = keys[0] + '-01';
@@ -50,11 +50,11 @@ function playerApp() {
     },
 
     thumbUrl(t) {
-      return `/data/thumbs/${t.slice(0,4)}/${t.slice(5,10)}/${t}.webp`;
+      return `data/thumbs/${t.slice(0,4)}/${t.slice(5,10)}/${t}.webp`;
     },
 
     originalUrl(t) {
-      return `/data/archive/${t.slice(0,4)}/${t.slice(5,10)}/${t}.jpg`;
+      return `data/archive/${t.slice(0,4)}/${t.slice(5,10)}/${t}.jpg`;
     },
 
     frameUrl(t) {

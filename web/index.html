@@ -6,7 +6,7 @@
   <title>Bristenblick — Timelapse</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <link rel="stylesheet" href="/css/site.css">
+  <link rel="stylesheet" href="css/site.css">
 </head>
 <body class="bg-slate-900 text-slate-100" x-data="playerApp()"
       x-init="init()" @keydown.window="keyHandler($event)">
@@ -77,7 +77,7 @@
       </div>
       <div class="bg-slate-800 p-3 rounded">
         <h2 class="font-semibold mb-2">Highlights (<span x-text="favs.length"></span>)</h2>
-        <a href="/favs.html" class="text-blue-400 underline text-sm">→ Galerie</a>
+        <a href="favs.html" class="text-blue-400 underline text-sm">→ Galerie</a>
         <button @click="exportFavs()"
                 class="block mt-2 text-sm bg-slate-700 px-2 py-1 rounded">⤓ favs.json</button>
       </div>
@@ -88,6 +88,6 @@
     </aside>
   </main>
 
-  <script src="/js/player.js"></script>
+  <script src="js/player.js"></script>
 </body>
 </html>

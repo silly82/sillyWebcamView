@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bristenblick — Timelapse</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <link rel="stylesheet" href="/css/site.css">
+</head>
+<body class="bg-slate-900 text-slate-100" x-data="playerApp()"
+      x-init="init()" @keydown.window="keyHandler($event)">
+
+  <header class="p-4 border-b border-slate-700 flex justify-between items-baseline">
+    <h1 class="text-2xl font-semibold">🌄 Bristenblick Timelapse</h1>
+    <span class="text-xs text-slate-400" x-text="statusLine()"></span>
+  </header>
+
+  <main class="grid lg:grid-cols-[2fr_1fr] gap-4 p-4">
+    <section>
+      <div class="aspect-[3/2] bg-black rounded overflow-hidden relative">
+        <img :src="currentFrame ? frameUrl(currentFrame.t) : ''"
+             class="w-full h-full object-contain" alt="Webcam-Frame"
+             @error="imgError($event)">
+        <div class="absolute bottom-2 left-2 text-xs bg-black/60 px-2 py-1 rounded">
+          <span x-text="currentFrame ? utcDate(currentFrame.t).toLocaleString('de-CH') : '—'"></span>
+          <span x-show="exifLine(currentFrame)" class="text-amber-300 ml-2"
+                x-text="exifLine(currentFrame)"></span>
+        </div>
+        <div class="absolute bottom-2 right-2 text-xs bg-black/60 px-2 py-1 rounded"
+             x-text="`${pos+1} / ${visibleFrames.length}`"></div>
+        <div x-show="quality==='original'" class="absolute top-2 right-2 text-xs bg-amber-600/80 px-2 py-1 rounded">
+          Original (5 MB)
+        </div>
+        <div x-show="error" class="absolute inset-0 flex items-center justify-center bg-black/80 text-red-400 text-sm"
+             x-text="error"></div>
+      </div>
+
+      <div class="flex flex-wrap gap-3 mt-3 items-center text-sm">
+        <button @click="togglePlay()" class="px-4 py-2 bg-blue-600 rounded"
+                x-text="playing ? '⏸ Pause' : '▶ Play'"></button>
+        <label>Tempo:
+          <select :value="fps" @change="setFps(+ $event.target.value)"
+                  class="bg-slate-800 px-2 py-1 rounded">
+            <option value="0.5">0.5 fps</option>
+            <option value="1">1 fps</option>
+            <option value="2">2 fps</option>
+            <option value="4">4 fps</option>
+            <option value="8">8 fps</option>
+          </select>
+        </label>
+        <label><input type="checkbox" x-model="loop"> Loop</label>
+        <label>Qualität:
+          <select x-model="quality" @change="preloadCache.clear(); preloadAround(pos); error=''"
+                  class="bg-slate-800 px-2 py-1 rounded">
+            <option value="thumb">Thumb (schnell)</option>
+            <option value="original">Original (Detail)</option>
+          </select>
+        </label>
+        <button @click="toggleFav()" class="px-3 py-2 rounded text-lg"
+                :class="isFav(currentFrame) ? 'bg-yellow-500' : 'bg-slate-700'"
+                x-text="isFav(currentFrame) ? '★' : '☆'"></button>
+      </div>
+    </section>
+
+    <aside class="space-y-4">
+      <div class="bg-slate-800 p-3 rounded">
+        <h2 class="font-semibold mb-2">Zeitraum</h2>
+        <label class="block text-sm">Von:
+          <input type="date" x-model="rangeFrom" @change="loadRange()"
+                 class="bg-slate-900 px-2 py-1 rounded"></label>
+        <label class="block text-sm mt-2">Bis:
+          <input type="date" x-model="rangeTo" @change="loadRange()"
+                 class="bg-slate-900 px-2 py-1 rounded"></label>
+        <p class="text-xs text-slate-400 mt-2">
+          <span x-text="visibleFrames.length"></span> Frames</p>
+      </div>
+      <div class="bg-slate-800 p-3 rounded">
+        <h2 class="font-semibold mb-2">Highlights (<span x-text="favs.length"></span>)</h2>
+        <a href="/favs.html" class="text-blue-400 underline text-sm">→ Galerie</a>
+        <button @click="exportFavs()"
+                class="block mt-2 text-sm bg-slate-700 px-2 py-1 rounded">⤓ favs.json</button>
+      </div>
+      <div class="bg-slate-800 p-3 rounded text-xs text-slate-400">
+        <p>Quelle: <a href="https://bristenblick.ch" class="underline">bristenblick.ch</a></p>
+        <p>Update alle 10 min · Letzter Frame: <span x-text="index?.months?.slice(-1)[0]?.last || '…'"></span></p>
+      </div>
+    </aside>
+  </main>
+
+  <script src="/js/player.js"></script>
+</body>
+</html>

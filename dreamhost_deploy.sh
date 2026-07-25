@@ -18,6 +18,11 @@ rsync -avz --delete \
   --exclude='.pytest_cache/' \
   ./ "$REMOTE:$DEST"
 
+# web/ flach in den DocumentRoot kopieren (nicht als Unterordner)
+rsync -avz --delete \
+  --exclude='.DS_Store' \
+  web/ "$REMOTE:$DEST"
+
 echo "✓ deployed. Einmalig nötig: ssh $REMOTE 'bash $DEST/scripts/server_setup.sh'"
 echo "  Dann Cron im Dreamhost-Panel: */10 * * * * \$HOME/bristenblick.ch/timelapse/scripts/run_update.sh"
 echo "  Und .htaccess um 'RewriteCond %{REQUEST_URI} !^/timelapse/' erweitern"

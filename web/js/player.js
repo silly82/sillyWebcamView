@@ -31,7 +31,7 @@ function playerApp() {
       const fromM = this.rangeFrom.slice(0, 7), toM = this.rangeTo.slice(0, 7);
       for (const m of this.index.months) {
         if (m.key < fromM || m.key > toM) continue;
-        const month = await fetch(`/data/manifest/${m.key}.json`).then(r => r.json());
+        const month = await fetch(`data/manifest/${m.key}.json`).then(r => r.json());
         for (const f of month.frames) {
           const day = f.t.slice(0, 10);
           if (day >= this.rangeFrom && day <= this.rangeTo) this.frames.push(f);

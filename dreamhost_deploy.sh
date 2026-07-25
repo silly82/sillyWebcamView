@@ -2,7 +2,7 @@
 set -euo pipefail
 
 REMOTE="${DREAMHOST_REMOTE:?set DREAMHOST_REMOTE=user@host}"
-DEST="${DREAMHOST_DEST:-~/bristenblick.ch/timelapse/}"
+DEST="${DREAMHOST_DEST:-bristenblick.ch/timelapse/}"
 
 cd "$(dirname "$0")"
 

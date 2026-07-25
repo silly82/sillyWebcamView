@@ -6,8 +6,8 @@ DEST="${DREAMHOST_DEST:-bristenblick.ch/timelapse/}"
 
 cd "$(dirname "$0")"
 
-# Nur Code deployen — data/ lebt ausschliesslich auf dem Server
-rsync -avz --delete \
+# 1. Scripts + LICENSE deployen
+rsync -avz \
   --exclude='.git/' \
   --exclude='.hermes/' \
   --exclude='data/' \
@@ -16,10 +16,11 @@ rsync -avz --delete \
   --exclude='.gitignore' \
   --exclude='__pycache__/' \
   --exclude='.pytest_cache/' \
-  ./ "$REMOTE:$DEST"
+  --exclude='.DS_Store' \
+  scripts/ "$REMOTE:$DEST/scripts/"
 
-# web/ flach in den DocumentRoot kopieren (nicht als Unterordner)
-rsync -avz --delete \
+# 2. web/ flach in den DocumentRoot (ohne --delete, sonst wird data/ geloescht!)
+rsync -avz \
   --exclude='.DS_Store' \
   web/ "$REMOTE:$DEST"
 

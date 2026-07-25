@@ -22,11 +22,11 @@ Dreamhost Shared (Datenquelle + Web-Hosting)
   │     └── build_manifest.py   → data/manifest/index.json + YYYY-MM.json
   ├── Originale: 30 Tage rollierend (~26 GB)
   ├── Thumbs: permanent (~8 GB/Jahr)
-  └── Webroot: web/ (index.html, favs.html, css/, js/)
+  └── Webroot: ~/bristenblick.ch/timelapse/ (index.html, favs.html, css/, js/, data/)
 
 Mac (Dev-Maschine + Vollarchiv)
   ├── git clone → Entwicklung, Tests
-  ├── dreamhost_deploy.sh → rsync code-only nach Dreamhost
+  ├── dreamhost_deploy.sh → rsync code-only nach ~/bristenblick.ch/timelapse/
   └── sync_originals.sh → spiegelt Originale lokal (~263 GB/Jahr)
 
 Browser
@@ -70,13 +70,20 @@ export DREAMHOST_REMOTE=user@yourserver.dreamhost.com
 **Einmalig auf dem Server (Pillow installieren, Verzeichnisse anlegen):**
 
 ```bash
-ssh $DREAMHOST_REMOTE 'bash ~/bristenblick.ch/scripts/server_setup.sh'
+ssh $DREAMHOST_REMOTE 'bash ~/bristenblick.ch/timelapse/scripts/server_setup.sh'
 ```
 
 **Cronjob im Dreamhost-Panel einrichten:**
 
 ```
-*/10 * * * * $HOME/bristenblick.ch/scripts/run_update.sh
+*/10 * * * * $HOME/bristenblick.ch/timelapse/scripts/run_update.sh
+```
+
+**.htaccess anpassen** (damit `/timelapse/` nicht nach `/weather/` umgeleitet wird):
+
+```apache
+# In ~/bristenblick.ch/.htaccess — Zeile hinzufügen:
+RewriteCond %{REQUEST_URI} !^/timelapse/
 ```
 
 **Originale auf den Mac spiegeln (wöchentlich, z.B. via launchd):**

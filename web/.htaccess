@@ -6,8 +6,11 @@ AddType image/webp .webp
     Header set Pragma "no-cache"
     Header set Expires "0"
   </FilesMatch>
-  # HTML: revalidieren aber cachen
+  # HTML + JS + CSS: revalidieren (Bypass Dreamhost's 30-Tage-Cache)
   <FilesMatch "\.(html)$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+  <FilesMatch "\.(js|css)$">
     Header set Cache-Control "no-cache, must-revalidate"
   </FilesMatch>
   # Thumbs + Originale: lange cachen (filename hat Timestamp)

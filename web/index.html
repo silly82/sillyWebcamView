@@ -21,7 +21,7 @@
       <div class="aspect-[3/2] bg-black rounded overflow-hidden relative">
         <img :src="currentFrame ? frameUrl(currentFrame.t) : ''"
              class="w-full h-full object-contain" alt="Webcam-Frame"
-             @error="imgError($event)">
+             @error="imgError($event)" @load="imgLoad($event)">
         <div class="absolute bottom-2 left-2 text-xs bg-black/60 px-2 py-1 rounded">
           <span x-text="currentFrame ? utcDate(currentFrame.t).toLocaleString('de-CH') : '—'"></span>
           <span x-show="exifLine(currentFrame)" class="text-amber-300 ml-2"

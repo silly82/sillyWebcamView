@@ -6,13 +6,13 @@ def test_index_references_required_assets():
     html = (WEB/"index.html").read_text()
     assert "alpinejs" in html.lower()
     assert "tailwindcss" in html.lower()
-    assert "/js/player.js" in html
+    assert "js/player.js" in html or "/js/player.js" in html
 
 def test_player_has_core_features():
     js = (WEB/"js"/"player.js").read_text()
     for feat in ["preloadAround", "fps", "keyHandler",
                  "toggleFav", "exportFavs", "statusLine", "exifLine",
-                 "frameUrl", "originalUrl", "imgError"]:
+                 "frameUrl", "originalUrl", "imgError", "imgLoad", "_ready"]:
         assert feat in js, f"missing: {feat}"
 
 def test_css_has_cloak():

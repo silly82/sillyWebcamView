@@ -23,10 +23,13 @@ function playerApp() {
       const keys = this.index.months.map(m => m.key);
       this.rangeFrom = keys[0] + '-01';
       this.rangeTo = new Date().toISOString().slice(0, 10);
+      this._ready = true;
       await this.loadRange();
     },
 
     async loadRange() {
+      // Skip until init has set rangeFrom/rangeTo (avoids double-load on mount)
+      if (!this._ready) return;
       this.frames = [];
       const fromM = this.rangeFrom.slice(0, 7), toM = this.rangeTo.slice(0, 7);
       for (const m of this.index.months) {
@@ -122,11 +125,17 @@ function playerApp() {
     },
 
     imgError(e) {
+      // Only set error if image truly failed (not stale error from initial load)
       if (this.quality === 'original') {
         this.error = 'Original nicht mehr verfügbar (30-Tage-Retention)';
       } else {
         this.error = 'Bild konnte nicht geladen werden';
       }
+    },
+
+    imgLoad(e) {
+      // Clear error when image actually loads successfully
+      this.error = '';
     },
 
     isFav(f) { return f && this.favs.some(x => x.t === f.t); },

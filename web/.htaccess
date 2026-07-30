@@ -1,0 +1,17 @@
+AddType image/webp .webp
+<IfModule mod_headers.c>
+  # Manifest + Status: nie cachen (Browser muss neue Frames sehen)
+  <FilesMatch "\.(json)$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires "0"
+  </FilesMatch>
+  # HTML: revalidieren aber cachen
+  <FilesMatch "\.(html)$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+  # Thumbs + Originale: lange cachen (filename hat Timestamp)
+  <FilesMatch "\.(webp|jpg)$">
+    Header set Cache-Control "public, max-age=86400"
+  </FilesMatch>
+</IfModule>
